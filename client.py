@@ -42,10 +42,10 @@ class Client:
 
 
 if __name__ == "__main__":
-    #host = socket.gethostname()
-    #port = 1234
-    host = "3.22.53.161"
-    port = 11020
+    host = socket.gethostname()
+    port = 1234
+    #host = "3.22.53.161"
+    #port = 11020
     client = Client(host, port, "Thao")
     msg = client.recv()
     print(msg)

@@ -1,9 +1,11 @@
 import socket 
+from get_image import convert_csv_to_image
 from select import select
 import pickle
 import json
 import cv2 as cv
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class Server:
@@ -13,6 +15,8 @@ class Server:
         self.server = self.initialize_server(host, port)
         self.server.listen()
         self.sockets = [self.server]
+        self.image = None
+        self.binary_image = None
         self.addr = {}
 
     @staticmethod
@@ -58,13 +62,32 @@ class Server:
                     self.addr[conn] = addr
                     print(f"[CONNECT] {addr[0]}:{addr[1]} connected.")
                     self.sockets.append(conn)
-                    self.send(conn, self.get_dictionary(data_type="hello", data="Hello Guys"))
+                    #self.send(conn, self.get_dictionary(data_type="hello", data="Hello Guys"))
                 else:
                     try:
                         msg = self.recv(socket)
                         if msg["type"] == "hello":
                             print(f"[RECEIVE] Receive a greeting from {self.addr[socket][0]}:{self.addr[socket][1]}") 
                             print(msg)
+                        elif msg["type"] == "image":
+                            print(f"[RECEIVE] Receive an image from {self.addr[socket][0]}:{self.addr[socket][1]}") 
+                            self.image = msg['content']
+                            self.send(socket, self.get_dictionary(data_type="receive", data="Server is reiceived."))
+                        elif msg["type"] == "binary_img":
+                            print(f"[RECEIVE] Receive a binary image from {self.addr[socket][0]}:{self.addr[socket][1]}") 
+                            self.binary_image = msg['content']
+                            self.send(socket, self.get_dictionary(data_type="receive", data="Server is reiceived."))
+                        elif msg["type"] == "get_image":
+                            print("[SEND] Send an image to {self.addr[socket][0]}:{self.addr[socket][1]")
+                            self.send(socket, self.get_dictionary(data_type="send_image", data=self.image))
+                        elif msg["type"] == "get_binary_image":
+                            print("[SEND] Send a binary image to {self.addr[socket][0]}:{self.addr[socket][1]")
+                            self.send(socket, self.get_dictionary(data_type="send_image", data=self.binary_image))
+                        elif  msg["type"] == "run":
+                            print("[CONVERT] convert to image")
+                            convert_csv_to_image("labview\\data.csv")
+
+
                     except Exception as e:
                             print(f"[ERROR] {e}") 
                             self.sockets.remove(socket)
