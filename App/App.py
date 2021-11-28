@@ -14,20 +14,23 @@ import numpy as np
 import pickle
 from threading import Thread
 from functools import partial
+from time import time
 
 
 class MainWidget(Widget):
     def __init__(self, **kwargs):
         Widget.__init__(self, **kwargs)
         self.client = None
-        Clock.schedule_interval(self.send, 3)
+        Clock.schedule_interval(self.send, 0.5)
         self.send_msg = None
         self.binary_img = None
-        self.capture = cv.VideoCapture("https://192.168.1.101:8080/video")
+        self.capture = cv.VideoCapture("https://192.168.1.5:8080/video")
 
     def send_thread(self):
-        msg = self.client.send(self.send_msg, data_type="image")
+        first = time()
+        #msg = self.client.send(self.send_msg, data_type="image")
         msg = self.client.send(self.binary_img, data_type="binary_img")
+        print(f"send in {time() - first}")
 
     def send(self, dt):
         try:

@@ -1,4 +1,5 @@
 import socket 
+from time import time
 from get_image import convert_csv_to_image
 from select import select
 import pickle
@@ -78,14 +79,15 @@ class Server:
                             self.binary_image = msg['content']
                             self.send(socket, self.get_dictionary(data_type="receive", data="Server is reiceived."))
                         elif msg["type"] == "get_image":
-                            print("[SEND] Send an image to {self.addr[socket][0]}:{self.addr[socket][1]")
+                            print(f"[SEND] Send an image to {self.addr[socket][0]}:{self.addr[socket][1]}")
                             self.send(socket, self.get_dictionary(data_type="send_image", data=self.image))
                         elif msg["type"] == "get_binary_image":
-                            print("[SEND] Send a binary image to {self.addr[socket][0]}:{self.addr[socket][1]")
+                            print(f"[SEND] Send a binary image to {self.addr[socket][0]}:{self.addr[socket][1]}")
                             self.send(socket, self.get_dictionary(data_type="send_image", data=self.binary_image))
                         elif  msg["type"] == "run":
-                            print("[CONVERT] convert to image")
+                            first = time()
                             convert_csv_to_image("labview\\data.csv")
+                            print(f"[CONVERT] convert to image in {time() - first}")
 
 
                     except Exception as e:

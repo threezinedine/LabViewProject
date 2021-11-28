@@ -32,6 +32,7 @@ def convert_csv_to_image(file):
     img = np.array(data)
     image = Image.fromarray(img.astype(np.uint8), "L")
     image.save("labview\\image.png")
+    print("Image is saved.")
     return copy_data
 
 if __name__ == "__main__":
